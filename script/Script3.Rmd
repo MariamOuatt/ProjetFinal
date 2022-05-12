@@ -1,0 +1,51 @@
+---
+title: "Script3"
+author: "Mariam Ouattara"
+date: "04/05/2022"
+output: html_document
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(cache = TRUE)
+# Passer la valeur suivante à TRUE pour reproduire les extractions.
+knitr::opts_chunk$set(eval = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
+```
+# le monde
+```{r}
+library(leaflet)
+library(sf)
+leaflet() %>% addTiles()
+
+data <- st_read("data/insee.gpkg")
+data <- st_read("data/insee.gpkg","bondy")
+st_layers("data/insee.gpkg")
+data <- st_transform(data, 4326)
+#pour lire les donnée dans data
+summary(data)
+#j'ai choisi la donné Men_5ind qui représente le nombre de menage avec plus de 5 personnes
+data$Men_5ind
+pal <- colorNumeric(
+  palette = "YlOrRd",
+  domain = data$Men_5ind
+)
+leaflet(data) %>%
+  addPolygons(color = "#444444", weight = 1, smoothFactor = 0.5,
+    opacity = 1.0, fillOpacity = 0.5,
+    fillColor = ~colorQuantile("YlOrRd", Men_5ind)(Men_5ind),
+    highlightOptions = highlightOptions(color = "white", weight = 2,
+      bringToFront = TRUE)) %>% addLegend("bottomright", pal = pal, values = ~Men_5ind,
+    title = " Nb Ménage avec ou plus de 5 pers",
+    opacity = 1
+  ) %>% addTiles()
+
+
+
+
+
+```
+Ici je n'ai pas très bien compris la question posé. Mais j'ai quand meme essayé de faire un carroyage avec un.
+
+

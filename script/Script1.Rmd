@@ -1,0 +1,33 @@
+---
+title: "Présentation des Données"
+author: "Mariam Ouattara"
+date: "04/05/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Présentation des Données : Vote et Carroyage
+
+```{r}
+#Je vérifie d'abord où est ce que je me situe dans mon ordinateur
+getwd()
+#Je charge la library sf
+library(sf)
+#Les ligne suivante me permettent d'importer  le fichier vote au format geopackage situé dans le dossier data
+vote <- st_read("data/vote.gpkg")
+
+#la fonction str me permet de visualiser mes données
+str(vote)
+
+
+#Je fais pareil pour les donnée de insee
+insee <-st_read("data/insee.gpkg")
+
+str(insee)
+
+
+
+````

@@ -1,0 +1,107 @@
+---
+title: "Première analyse"
+author: "Mariam Ouattara"
+date: "04/05/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Une carte de vote et une carte d'une variable de carroyage
+## Carte de vote
+
+
+Fonction utulisées
+- plot
+- mf_map
+
+
+
+```{r}
+library(mapsf)
+zone<- st_read("data/vote.gpkg", "zone")
+#pour voir le contenu de zone
+str(zone)
+
+#pour la carte des 31 bureaux de vote de Bondy
+plot(zone$geom, col = terrain.colors (31),
+     border = NA,
+     main = "Les bureaux de vote de Bondy")
+
+```
+
+
+```{r}
+mf_map(zone, type = "choro", pal = "Burg",
+       border = NA, var = "numBureau",)
+```
+Plus le numero du bureau s'eloigne de 1 plus la couleur est foncé. Les bureaux ont la meme couleur en fonction des zones de bureaux de votes.
+
+```{r}
+
+#On veux  savoir le taux de votant par Zone de bureau
+mf_map(zone, type = "choro", pal = "Burg",
+       border = NA, var = "txVotants", )
+
+```
+
+Lorsqu'on compare cette carte de taux de votant avec celle precedente, on constate que certain buraux notamment ceux compris entre le numéro 1 et le numero 6 sont les buraux avec les plus fort taux de vote compris entre 50 et 70% . Quant au bureau avec des numéro compris entre 21 et 32 ils acccumulent de faible de taux de votants compris entre 35% et 44%.
+
+
+
+# Densité des ménages de avec ou plus de 5 personnes
+
+Je choisis d'etudier la partie de la population vivant à 5 ou plus dans leur maison. Venant moi même d'une famille nombreuse je trouve celà très interressant et j'aimerais savoir la part de ceux ci dans la population de la ville de Bondy.
+
+Je commence donc faire par un histogramme
+
+## Histogramme
+
+```{r}
+vote <- st_read("data/vote.gpkg", "jointure")
+insee <- st_read("data/insee.gpkg", "bondy")
+names(vote)[c(3,14)] <- c("bureau", "vote")
+vote <- vote [, c("bureau", "vote")]
+# Pour obtenir un chiffre relatif, on divise le nombre de ménages pauvres par le nombre de ménages total
+insee$densite <- (insee$Men_5ind / insee$Men)*100
+insee <- insee [, "densite"]
+hist(insee$densite, main = "densité des ménages avec ou plus 5 pers")
+```
+
+
+
+## Carroyage
+
+
+```{r}
+#On s'interesse aux menages composé de 5 personne ou plus (carroyage)
+library(mapsf)
+data <- read.csv("data/bondyInsee.csv", fileEncoding = "UTF-8")
+names(data)
+barplot(data$Men_5ind, main = "carroyage INSEE Bondy, disparité de personne par menage", xlab = "carreaux carroyage" ,
+        ylab = "Nb de ménages avec ou plus de 5 personnes ", col = "blue", border = NA)
+
+```
+    
+   Grave à cet histograme on constate que la répartition population de Bondy est tres disparate, avec des carreaux allant jusquà 150 ménages de plus de 5 personnes. On va donc faire une carte pour mieux voir cette répartition.
+   
+    
+    
+
+## Carte de carroyage
+
+
+```{r}
+library(mapsf)
+data <- st_read("data/vote.gpkg", "inseeBondy")
+mf_map(data, type = "choro", pal = "Burg",
+       border = NA, var = "Men_5ind", leg_title = "Nb de ménages avec ou plus de 5 personnes")
+mf_layout(title =  " Repartition des ménages", credits = "INSEE Carroyage 200 m") 
+
+```
+On constate que de nombreux ménages ont plus de 5 personnes sous leurs toits.On peut etre parler ici de prédominance de famille nombreuses dans la ville de Bondy.
+
+J'ai aussi chercher à comprendre pourquoi ma palette de couleur était autant sur ma carte mais je n'ai pas trouver de solution pour changer cela.
+
